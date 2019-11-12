@@ -20,6 +20,22 @@ class App extends React.Component {
     });
   };
 
+  onClcikDel = idx => {
+    const items = this.state.items;
+    this.setState({
+      items: [...items.slice(0, idx), ...items.slice(idx + 1)]
+    });
+  };
+
+  onClickMod = (value, idx) => {
+    const newItems = [
+      ...this.state.items.slice(0, idx),
+      value,
+      ...this.state.items.slice(idx + 1)
+    ];
+    this.setState({ items: newItems });
+  };
+
   onChange = e => {
     this.setState({ value: e.target.value });
   };
@@ -34,7 +50,18 @@ class App extends React.Component {
           </button>
         </div>
         {this.state.items.map((value, idx) => (
-          <TodoItem key={idx} value={value} />
+          <TodoItem
+            key={Math.random()}
+            value={value}
+            onClickDel={() => {
+              this.onClcikDel(idx);
+
+            }}
+            onClickMod={() => {
+              var value = prompt("수정");
+              this.onClickMod(value, idx);
+            }}
+          />
         ))}
       </>
     );
