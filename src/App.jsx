@@ -1,3 +1,4 @@
+// App.jsx
 import React from "react";
 import TodoItem from "./TodoItem";
 import "./app.css";
@@ -8,7 +9,9 @@ class App extends React.Component {
 
     this.state = {
       items: [],
-      value: ""
+      value: "",
+      editItem: -1,
+      editValue: ""
     };
   }
 
@@ -20,20 +23,27 @@ class App extends React.Component {
     });
   };
 
-  onClcikDel = idx => {
-    const items = this.state.items;
-    this.setState({
-      items: [...items.slice(0, idx), ...items.slice(idx + 1)]
-    });
+  onClickDel = idx => {
+    const newItems = [...this.state.items];
+    newItems.splice(idx, 1);
+    this.setState({ items: newItems });
   };
 
-  onClickMod = (value, idx) => {
+  onClickMod = idx => {
+    this.setState({ editItem: idx, editValue: this.state.value });
+  };
+
+  onClickConfirm = idx => {
     const newItems = [
       ...this.state.items.slice(0, idx),
-      value,
+      this.state.editValue,
       ...this.state.items.slice(idx + 1)
     ];
-    this.setState({ items: newItems });
+    this.setState({ items: newItems, editItem: -1 });
+  };
+
+  onChageValue = e => {
+    this.setState({ editValue: e.target.value });
   };
 
   onChange = e => {
@@ -42,28 +52,32 @@ class App extends React.Component {
 
   render() {
     return (
-      <>
-        <div>
-          <input type="text" onChange={this.onChange} className="text" />
-          <button onClick={this.onClickAdd} className="btn">
+      <div className="aroot">
+        <div className="inputBox">
+          <input type="text" onChange={this.onChange} className="input" />
+          <button onClick={this.onClickAdd} className="addBtn">
             추가
           </button>
         </div>
         {this.state.items.map((value, idx) => (
           <TodoItem
-            key={Math.random()}
+            // key={Math.random() + idx}
             value={value}
-            onClickDel={() => {
-              this.onClcikDel(idx);
-
-            }}
+            className="list"
+            onClickDel={() => this.onClickDel(idx)}
             onClickMod={() => {
-              var value = prompt("수정");
-              this.onClickMod(value, idx);
+              this.onClickMod(idx);
+            }}
+            // 수정 할 때 사용하는 props
+            isEdit={this.state.editItem === idx}
+            editValue={this.state.editValue}
+            onChageValue={this.onChageValue}
+            onClickConfirm={() => {
+              this.onClickConfirm(idx);
             }}
           />
         ))}
-      </>
+      </div>
     );
   }
 }
